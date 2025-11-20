@@ -4,10 +4,14 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 
-# Game logic
 class NumberGuessingGame:
     def __init__(self):
-        self.secret_number = random.randint(1, 50)
+        self.level = 1
+        self.max_number = 50
+        self.start_new_level()
+
+    def start_new_level(self):
+        self.secret_number = random.randint(1, self.max_number)
         self.attempts = 0
 
     def check_guess(self, guess):
@@ -17,9 +21,11 @@ class NumberGuessingGame:
         elif guess > self.secret_number:
             return "Too high!"
         else:
-            return f"Correct! You guessed in {self.attempts} attempts."
+            self.level += 1
+            self.max_number += 50  # Increase difficulty
+            self.start_new_level()
+            return f"Correct! Moving to level {self.level}, number range is now 1-{self.max_number}."
 
-# GUI setup
 def start_game():
     game = NumberGuessingGame()
 
@@ -28,15 +34,13 @@ def start_game():
             guess = int(entry.get())
             result = game.check_guess(guess)
             messagebox.showinfo("Result", result)
-            if "Correct!" in result:
-                window.destroy()
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid number")
 
     window = tk.Tk()
-    window.title("Number Guessing Game")
+    window.title("Number Guessing Game: Multiple Levels")
 
-    label = tk.Label(window, text="Guess a number between 1 and 50:")
+    label = tk.Label(window, text=f"Guess a number between 1 and {game.max_number}:")
     label.pack(pady=10)
 
     entry = tk.Entry(window)
